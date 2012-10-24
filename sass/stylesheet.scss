@@ -1,0 +1,35 @@
+@import "compass/css3";
+@import "compass";
+
+div{
+	box-sizing:border-box;
+	position:relative;
+}
+
+#container{
+	margin-left:15px;
+	margin-top:8px;
+	width:243px;
+	height:344px;
+	overflow:hidden;
+	.content{ 
+		padding:0;
+		border:0;
+		margin:0;
+		display:block;
+		.instagram_photo{
+			width:108px;
+			height:108px;
+			border:5px solid #fff;
+			display:inline-block;
+			vertical-align:top;
+			margin:3px 2px;
+			@include border-radius(3px);
+			@include box-shadow(0 0 2px #666);
+			img{
+				width:98px;
+				height:98px;
+			}
+		}
+	}
+}
