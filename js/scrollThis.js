@@ -9,7 +9,7 @@ var scrollThis = function(cont){
 		var scroller_pct = (cont_height/height) * 100;
 		var scroller_height = (cont_height/height) * cont_height;
 		var max_scroller_scroll = (cont_height - scroller_height);
-		console.log(scroller_height, max_scroller_scroll)
+		//console.log(scroller_height, max_scroller_scroll)
 		var scroller = $('#scroll_bar');
 		scroller.css({"height": "" + scroller_pct + "%"});
 		scroller.fadeIn(800);
