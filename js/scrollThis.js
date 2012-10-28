@@ -1,12 +1,16 @@
 var scrollThis = function(cont){
 	var start, end;
-	cont.on('hover',function(){
+	cont.hover(function(){
 		var move_this = cont.children(':first');
 		var height = move_this.innerHeight();
 		var cont_height = cont.innerHeight();
 		var delta_d = move_this.position().top;
-		var max_scroll = (height - cont_height)*(-1);
-		var moov = 0;
+		var max_scroll = (height - cont_height) * (-1);
+		var scroller_height = (cont_height/height) * 100;
+		console.log(scroller_height);
+		var scroller = $('#scroll_bar');
+		scroller.css({"height": "" + scroller_height + "%"});
+		scroller.fadeIn(800);
 		cont.on('mousewheel', function(e,d){
 			e.preventDefault();
 			if (d > 1){
@@ -28,9 +32,14 @@ var scrollThis = function(cont){
 			move_this.css({
 				'top': delta_d + "px",
 			},0); 
-			
+			scroller.css({
+				'top': -1 * delta_d + "px",
+			});
 		});
 		return false;
+	}, function(cont) {
+		var scroller = $('#scroll_bar');
+		scroller.fadeOut(800);
 	});
 	var platform = window.clientInformation.platform;
 	var plt = platform.toLowerCase();
@@ -38,4 +47,5 @@ var scrollThis = function(cont){
 	{
 		cont.css({'overflow':'auto'});
 	}
+	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div id="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;"></div></div>')
 }
