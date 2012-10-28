@@ -6,16 +6,16 @@ var scrollThis = function(cont){
 		var cont_height = cont.innerHeight();
 		var delta_d = move_this.position().top;
 		var max_scroll = (height - cont_height) * (-1);
-		var scroller_height = (cont_height/height) * 100;
-		console.log(scroller_height);
+		var scroller_pct = (cont_height/height) * 100;
+		var scroller_height = (cont_height/height) * cont_height;
+		var max_scroller_scroll = (cont_height - scroller_height);
+		console.log(scroller_height, max_scroller_scroll)
 		var scroller = $('#scroll_bar');
-		scroller.css({"height": "" + scroller_height + "%"});
+		scroller.css({"height": "" + scroller_pct + "%"});
 		scroller.fadeIn(800);
 		cont.on('mousewheel', function(e,d){
 			e.preventDefault();
-			if (d > 1){
-				d = 1;
-			}
+			if (d > 1){d = 1;}
 			delta_d = delta_d + d*10;
 			// console.log(delta_d);
 			if (delta_d < max_scroll){
@@ -33,13 +33,14 @@ var scrollThis = function(cont){
 				'top': delta_d + "px",
 			},0); 
 			scroller.css({
-				'top': -1 * delta_d + "px",
+				'top': (delta_d/max_scroll)*max_scroller_scroll + "px",
 			});
+
 		});
 		return false;
 	}, function(cont) {
 		var scroller = $('#scroll_bar');
-		scroller.fadeOut(800);
+		scroller.delay(1500).fadeOut(800);
 	});
 	var platform = window.clientInformation.platform;
 	var plt = platform.toLowerCase();
