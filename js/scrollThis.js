@@ -37,6 +37,20 @@ var scrollThis = function(cont){
 			});
 
 		});
+		$(function () {
+			scroller.draggable({ 
+				axis: "y",
+				scroll: true,
+				containment: "parent", 
+				drag: function(e, f){
+					var top = f.position.top;
+					move_this.css({
+						'top': (top * max_scroll)/max_scroller_scroll + "px",
+					},0); 
+				},
+				
+			});
+		});
 		return false;
 	}, function(cont) {
 		var scroller = $('#scroll_bar');
@@ -48,5 +62,5 @@ var scrollThis = function(cont){
 	{
 		cont.css({'overflow':'auto'});
 	}
-	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div id="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;"></div></div>')
+	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div id="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;cursor:pointer"></div></div>')
 }
