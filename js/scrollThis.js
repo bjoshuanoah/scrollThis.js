@@ -10,7 +10,7 @@ var scrollThis = function(cont){
 		var scroller_height = (cont_height/height) * cont_height;
 		var max_scroller_scroll = (cont_height - scroller_height);
 		//console.log(scroller_height, max_scroller_scroll)
-		var scroller = $('#scroll_bar');
+		var scroller = $('.scroll_bar', cont);
 		scroller.css({"height": "" + scroller_pct + "%"});
 		scroller.fadeIn(800);
 		cont.on('mousewheel', function(e,d){
@@ -52,9 +52,9 @@ var scrollThis = function(cont){
 			});
 		});
 		return false;
-	}, function(cont) {
-		var scroller = $('#scroll_bar');
-		scroller.delay(1500).fadeOut(800);
+	}, function() {
+		 var scroller = $('.scroll_bar', cont);
+		 scroller.fadeOut(800);
 	});
 	var platform = window.clientInformation.platform;
 	var plt = platform.toLowerCase();
@@ -62,5 +62,5 @@ var scrollThis = function(cont){
 	{
 		cont.css({'overflow':'auto'});
 	}
-	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div id="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;cursor:pointer"></div></div>')
+	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div class="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;cursor:pointer"></div></div>')
 }
