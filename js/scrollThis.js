@@ -1,6 +1,7 @@
 var scrollThis = function(cont){
 	var start, end;
 	cont.hover(function(){
+		cont.addClass('scroll_time');
 		var move_this = cont.children(':first');
 		var height = move_this.innerHeight();
 		var cont_height = cont.innerHeight();
@@ -12,7 +13,6 @@ var scrollThis = function(cont){
 		//console.log(scroller_height, max_scroller_scroll)
 		var scroller = $('.scroll_bar', cont);
 		scroller.css({"height": "" + scroller_pct + "%"});
-		scroller.fadeIn(800);
 		cont.on('mousewheel', function(e,d){
 			e.preventDefault();
 			if (d > 1){d = 1;}
@@ -37,30 +37,34 @@ var scrollThis = function(cont){
 			});
 
 		});
-		$(function () {
-			scroller.draggable({ 
-				axis: "y",
-				scroll: true,
-				containment: "parent", 
-				drag: function(e, f){
-					var top = f.position.top;
-					move_this.css({
-						'top': (top * max_scroll)/max_scroller_scroll + "px",
-					},0); 
-				},
-				
-			});
+		scroller.draggable({ 
+			axis: "y",
+			scroll: true,
+			containment: "parent", 
+			drag: function(e, f){
+				var top = f.position.top;
+				move_this.css({
+					'top': (top * max_scroll)/max_scroller_scroll + "px",
+				}); 
+			},
+			stop: function(){
+				setTimeout(function(){
+					if (!cont.hasClass('scroll_time')){
+						cont.addClass('scroll_time');
+					}
+				},1);
+			}
 		});
 		return false;
 	}, function() {
-		 var scroller = $('.scroll_bar', cont);
-		 scroller.fadeOut(800);
+		cont.removeClass('scroll_time');
 	});
 	var platform = window.clientInformation.platform;
 	var plt = platform.toLowerCase();
-	if (plt == 'ipad' || plt == 'ipod' || plt == 'iphone' || plt.indexOf('arm') > -1 || plt == 'blackberry' || plt == 'win32')
+	if (plt == 'ipad' || plt == 'ipod' || plt == 'iphone' || plt.indexOf('arm') > -1 || plt == 'blackberry')
 	{
 		cont.css({'overflow':'auto'});
 	}
-	cont.append('<div id="scrollbar_container" style="top:0; right:0; width:7px; position:absolute; height:100%;"><div class="scroll_bar" style="top:0; width:7px; border-radius:3px; height:0px; background: #999;display:none;cursor:pointer"></div></div>')
+	cont.append('<div id="scrollbar_container"><div class="scroll_bar" style=""></div></div>')
+	cont.after('<style>#scrollbar_container{top:0; right:4px; width:7px; position:absolute; height:100%;} .scroll_bar{top:0; width:7px; border-radius:3px; height:0px; background: #999;opacity:0;cursor:pointer; -webkit-transition: opacity .8s linear; -moz-transition: opacity .8s linear; -o-transition: opacity .8s linear; transition: opacity .8s linear;} .scroll_time .scroll_bar{opacity:1} .scroll_bar:active{background:#777;}</style>')
 }
