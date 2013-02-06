@@ -12,6 +12,9 @@
 	transition: background .3s linear;
 	&:active{
 		background : #ddd;
+		.scrollbar{
+			opacity: 1;
+		}
 	}
 }
 
