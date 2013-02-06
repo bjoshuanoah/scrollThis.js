@@ -10,13 +10,16 @@
     that.contentHeight = that.content.innerHeight();
     //scrollbar elements
     that.scrollbar = $('<div/>').addClass('scrollbar');
+    that.scrollbarMock = $('<div/>').addClass('scrollbar_mock');
     that.track = $('<div/>').addClass('scrollbar_track');
-    that.track.append(that.scrollbar);
+    that.track.append(that.scrollbar, that.scrollbarMock);
     //calculations
     that.percent = (that.containerHeight/that.contentHeight) * 100;
     that.scrollHeight = (that.containerHeight/that.contentHeight) * that.containerHeight;
     that.max = (that.contentHeight - that.containerHeight) * (-1);
     that.maxScroll = (that.containerHeight - that.scrollHeight);
+    that.scrollbar.css({height: that.percent + "%"});
+    that.scrollbarMock.css({height: that.percent + "%"});
     //utilities
     that.transform = (function () {
       var body = document.body || document.documentElement,
@@ -40,6 +43,14 @@
       return obj;
     };
 
+    that.position = function(y){
+      var content = (y * that.max) / that.maxScroll
+      that.content.css(that.css(content));
+      that.scrollbar.css(
+        $.extend({}, that.css(y), {top : 0})
+      );   
+    };
+
     that.begin = function (container) {
       var delta_d;
 
@@ -58,9 +69,6 @@
       that.container.hover(function () {
         that.container.addClass('scroll_time');
         delta_d = that.content.position().top;
-        that.scrollbar.css({
-          "height": "" + that.percent + "%"
-        });
         that.container.on('mousewheel', function (e,d) {
           e.preventDefault();
           if (d > 1){d = 1;}
@@ -75,14 +83,15 @@
           }
           that.content.css(that.css(delta_d));
           that.scrollbar.css(that.css((delta_d / that.max) * that.maxScroll));
+          that.scrollbarMock.css({'top' : ((delta_d / that.max) * that.maxScroll) + 'px'})
         });
-        that.scrollbar.draggable({ 
+        that.scrollbarMock.draggable({ 
           axis: "y",
           scroll: true,
           containment: "parent", 
           drag: function (e, f) {
             var top = f.position.top;
-            that.content.css(that.css((top * that.max) / that.maxScroll)); 
+            that.position(top);
           },
           stop: function () {
             setTimeout(function () {

@@ -7,31 +7,36 @@
   height: 100%;
 }
 
-/* line 8, ../sass/scrollThis.scss */
-.scrollbar {
+/* line 9, ../sass/scrollThis.scss */
+.scrollbar, .scrollbar_mock {
+  position: absolute;
   top: 0;
   width: 7px;
-  border-radius: 3px;
   height: 0px;
-  background: #999;
-  opacity: 0;
   cursor: pointer;
+  opacity: 0;
+}
+
+/* line 18, ../sass/scrollThis.scss */
+.scrollbar {
+  border-radius: 3px;
+  background: #999;
   -webkit-transition: opacity 0.8s linear;
   -moz-transition: opacity 0.8s linear;
   -o-transition: opacity 0.8s linear;
   transition: opacity 0.8s linear;
 }
-/* line 20, ../sass/scrollThis.scss */
+/* line 25, ../sass/scrollThis.scss */
 .scrollbar:active {
   background: #777;
 }
 
-/* line 24, ../sass/scrollThis.scss */
+/* line 30, ../sass/scrollThis.scss */
 .scroll_time .scrollbar {
   opacity: 1;
 }
 
-/* line 29, ../sass/scrollThis.scss */
+/* line 35, ../sass/scrollThis.scss */
 .scroll_to_end .scrollbar, .scroll_to_end .scroll_content {
   -webkit-transition: all 0.5s linear;
   -moz-transition: all 0.5s linear;
