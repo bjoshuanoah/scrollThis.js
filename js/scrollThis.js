@@ -5,6 +5,9 @@
     }
     var that = this;
     that.container = container;
+    that.scrollbar = $('<div/>').addClass('scrollbar');
+    that.track = $('<div/>').addClass('scrollbar_track');
+    that.track.append(that.scrollbar);
 
     that.begin = function (container) {
       var start, 
@@ -16,12 +19,18 @@
         max_scroll, 
         scroller_pct, 
         scroller_height, 
-        max_scroller_scroll, 
-        scroller;
+        max_scroller_scroll;
 
       if (that.container.children().length < 2){
-        that.container.append('<div id="scrollbar_container"><div class="scroll_bar" style=""></div></div>');
-        that.container.after('<style>#scrollbar_container{top:0; right:4px; width:7px; position:absolute; height:100%;} .scroll_bar{top:0; width:7px; border-radius:3px; height:0px; background: #999;opacity:0;cursor:pointer; -webkit-transition: opacity .8s linear; -moz-transition: opacity .8s linear; -o-transition: opacity .8s linear; transition: opacity .8s linear;} .scroll_time .scroll_bar{opacity:1} .scroll_bar:active{background:#777;}</style>');
+        that.container.append(that.track);
+        that.container
+          .before($('<link>')
+            .attr({
+              href : './css/scrollThis.css',
+              rel : 'stylesheet',
+              type : 'text/css'
+            })
+          );
       }
 
       that.container.hover(function () {
@@ -35,9 +44,7 @@
         scroller_pct = (container_height/height) * 100;
         scroller_height = (container_height/height) * container_height;
         max_scroller_scroll = (container_height - scroller_height);
-        //console.log(scroller_height, max_scroller_scroll)
-        scroller = $('.scroll_bar', container);
-        scroller.css({
+        that.scrollbar.css({
           "height": "" + scroller_pct + "%"
         });
         that.container.on('mousewheel', function (e,d) {
@@ -59,12 +66,12 @@
           move_this.css({
             'top': delta_d + "px",
           }); 
-          scroller.css({
+          that.scrollbar.css({
             'top': (delta_d / max_scroll) * max_scroller_scroll + "px",
           });
 
         });
-        scroller.draggable({ 
+        that.scrollbar.draggable({ 
           axis: "y",
           scroll: true,
           containment: "parent", 
@@ -84,7 +91,7 @@
         });
         return false;
       }, function () {
-        container.removeClass('scroll_time');
+        that.container.removeClass('scroll_time');
       });
       var platform = window.clientInformation.platform;
       var plt = platform.toLowerCase();
@@ -114,8 +121,7 @@
           scroller_pct = (container_height/height) * 100;
           scroller_height = (container_height/height) * container_height;
           max_scroller_scroll = (container_height - scroller_height);
-          scroller = $('.scroll_bar', container);
-          scroller.css({
+          that.scrollbar.css({
             "height": "" + scroller_pct + "%"
           });
           move_this.animate({
