@@ -5,18 +5,41 @@
     }
     var that = this;
     that.container = container;
+    that.containerHeight = that.container.innerHeight();
+    that.content = that.container.children(':first').addClass('scroll_content');
+    that.contentHeight = that.content.innerHeight();
+    //scrollbar elements
     that.scrollbar = $('<div/>').addClass('scrollbar');
     that.track = $('<div/>').addClass('scrollbar_track');
     that.track.append(that.scrollbar);
+    that.max = (that.contentHeight - that.containerHeight) * (-1);
+    //utilities
+    that.transform = (function () {
+      var body = document.body || document.documentElement,
+        style = body.style, property = 'transform', vendor;
+      if(typeof style[property] == 'string') {return true; }
+      // Tests for vendor specific prop
+      vendor = ['Moz', 'Webkit', 'Khtml', 'O', 'ms'];
+      property = property.charAt(0).toUpperCase() + property.substr(1);
+      for(var i = 0; i < vendor.length; i += 1) {
+        if(typeof style[vendor[i] + property] == 'string'){ 
+          return vendor[i] + property; 
+        }
+      }
+      return null;
+    }());
+
+    that.css = function(top){
+      var obj = {};
+      obj[(that.transform) ? that.transform : 'top'] = 
+        (that.transform) ? 'translate3d(0,' + top + 'px,0)' : top + 'px';
+      return obj;
+    };
 
     that.begin = function (container) {
       var start, 
-        end, 
-        move_this, 
-        height, 
-        container_height, 
-        delta_d, 
-        max_scroll, 
+        end,  
+        delta_d,  
         scroller_pct, 
         scroller_height, 
         max_scroller_scroll;
@@ -34,16 +57,11 @@
       }
 
       that.container.hover(function () {
-
         that.container.addClass('scroll_time');
-        move_this = that.container.children(':first');
-        height = move_this.innerHeight();
-        container_height = that.container.innerHeight();
-        delta_d = move_this.position().top;
-        max_scroll = (height - container_height) * (-1);
-        scroller_pct = (container_height/height) * 100;
-        scroller_height = (container_height/height) * container_height;
-        max_scroller_scroll = (container_height - scroller_height);
+        delta_d = that.content.position().top;
+        scroller_pct = (that.containerHeight/that.contentHeight) * 100;
+        scroller_height = (that.containerHeight/that.contentHeight) * that.containerHeight;
+        max_scroller_scroll = (that.containerHeight - scroller_height);
         that.scrollbar.css({
           "height": "" + scroller_pct + "%"
         });
@@ -52,24 +70,15 @@
           if (d > 1){d = 1;}
           delta_d = delta_d + d*10;
           // console.log(delta_d);
-          if (delta_d < max_scroll) {
-            delta_d = max_scroll;
-            move_this.css({
-              "top": delta_d + 'px',
-            });
+          if (delta_d < that.max) {
+            delta_d = that.max;
+            that.content.css(that.css(delta_d));
           } else if (delta_d > 0) {
             delta_d = 0
-            move_this.css({
-              "top": delta_d + 'px',
-            });
+            that.content.css(that.css(delta_d));
           }
-          move_this.css({
-            'top': delta_d + "px",
-          }); 
-          that.scrollbar.css({
-            'top': (delta_d / max_scroll) * max_scroller_scroll + "px",
-          });
-
+          that.content.css(that.css(delta_d));
+          that.scrollbar.css(that.css((delta_d / that.max) * max_scroller_scroll));
         });
         that.scrollbar.draggable({ 
           axis: "y",
@@ -77,14 +86,12 @@
           containment: "parent", 
           drag: function (e, f) {
             var top = f.position.top;
-            move_this.css({
-              'top': (top * max_scroll) / max_scroller_scroll + "px",
-            }); 
+            that.content.css(that.css((top * that.max) / max_scroller_scroll)); 
           },
           stop: function () {
             setTimeout(function () {
-              if (!container.hasClass('scroll_time')){
-                container.addClass('scroll_time');
+              if (!that.container.hasClass('scroll_time')){
+                that.container.addClass('scroll_time');
               }
             }, 1);
           }
@@ -100,22 +107,14 @@
       }
     }
 
-    that.end = function (id) {
-      var move_this, 
-        height, 
-        container_height, 
-        max_scroll, 
-        scroller_pct, 
+    that.end = function () {
+      var scroller_pct, 
         scroller_height, 
-        max_scroller_scroll, 
-        scroller;
+        max_scroller_scroll;
 
-      var this_id = "message_"+id;
-        //console.log(this_id);
         setTimeout(function () {
           scrollThis(container);
-          move_this = container.children(':first');
-          height = move_this.innerHeight();
+          height = that.content.innerHeight();
           container_height = that.container.innerHeight();
           max_scroll = (height - container_height) * (-1);
           scroller_pct = (container_height/height) * 100;
@@ -124,10 +123,10 @@
           that.scrollbar.css({
             "height": "" + scroller_pct + "%"
           });
-          move_this.animate({
+          that.content.animate({
             top: max_scroll + 'px',
           });
-          scroller.animate({
+          that.scrollbar.animate({
             'top': max_scroller_scroll + "px",
           });
         }, 500);
