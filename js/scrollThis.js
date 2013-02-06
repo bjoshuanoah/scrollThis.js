@@ -7,9 +7,9 @@
     var that = this;
     //basic elements
     that.container = container;
-    that.containerHeight = that.container.innerHeight();
+    that.containerHeight = that.container.outerHeight();
     that.content = that.container.children(':first').addClass('scroll_content');
-    that.contentHeight = that.content.innerHeight();
+    that.contentHeight = that.content.outerHeight();
     //scrollbar elements
     that.scrollbar = $('<div/>').addClass('scrollbar');
     that.scrollbarMock = $('<div/>').addClass('scrollbar_mock');
@@ -74,7 +74,7 @@
       );   
     };
 
-    that.begin = function (container) {
+    that.init = function (container) {
       var delta_d;
       that.scrollbar.css($.extend({}, {height: that.percent + "%"}, that.css(0)));
       that.scrollbarMock.css({height: that.percent + "%"});
@@ -138,18 +138,28 @@
           that.container.css({'overflow':'auto'});
       }
     };
-
-    that.end = function () {
+    that.top = function () {
+      var duration = 500;
+        that.container.addClass('scroll_to_end');
+        that.content.css(that.css(0));
+        that.scrollbar.css(that.css(0));
+        that.scrollbarMock.css({"top" : '0px'});
+        setTimeout(function(){
+          that.container.removeClass('scroll_to_end');
+        }, duration);
+    };
+    that.bottom = function () {
       var duration = 500;
         that.container.addClass('scroll_to_end');
         that.content.css(that.css(that.max));
         that.scrollbar.css(that.css(that.maxScroll));
+        that.scrollbarMock.css({"top" : that.maxScroll + 'px'});
         setTimeout(function(){
           that.container.removeClass('scroll_to_end');
         }, duration);
     };
     // init
-    that.begin();
+    that.init();
   };
 
   $.fn.scrollThis = function(flag){
@@ -164,7 +174,17 @@
   $.fn.scrollToEnd = function(){
     if(this.scrollers){
       for(var i = 0; i < this.scrollers.length; i += 1){
-        this.scrollers[i].end();
+        this.scrollers[i].bottom();
+      }
+    }else{
+      throw 'You need to call scrollThis first'
+    }
+  };
+
+  $.fn.scrollToTop = function(){
+    if(this.scrollers){
+      for(var i = 0; i < this.scrollers.length; i += 1){
+        this.scrollers[i].top();
       }
     }else{
       throw 'You need to call scrollThis first'

@@ -1,7 +1,12 @@
 /* line 1, ../sass/scrollThis.scss */
+.scroll_content {
+  padding-right: 7px!important;
+}
+
+/* line 5, ../sass/scrollThis.scss */
 .scrollbar_track {
   top: 0;
-  right: 4px;
+  right: 0px;
   width: 7px;
   position: absolute;
   overflow: hidden;
@@ -12,16 +17,16 @@
   -o-transition: background 0.3s linear;
   transition: background 0.3s linear;
 }
-/* line 13, ../sass/scrollThis.scss */
+/* line 17, ../sass/scrollThis.scss */
 .scrollbar_track:active {
   background: #ddd;
 }
-/* line 15, ../sass/scrollThis.scss */
+/* line 19, ../sass/scrollThis.scss */
 .scrollbar_track:active .scrollbar {
   opacity: 1;
 }
 
-/* line 21, ../sass/scrollThis.scss */
+/* line 25, ../sass/scrollThis.scss */
 .scrollbar, .scrollbar_mock {
   position: absolute;
   top: 0;
@@ -31,7 +36,7 @@
   opacity: 0;
 }
 
-/* line 30, ../sass/scrollThis.scss */
+/* line 34, ../sass/scrollThis.scss */
 .scrollbar {
   border-radius: 4px;
   background: #999;
@@ -40,17 +45,17 @@
   -o-transition: opacity 0.8s linear;
   transition: opacity 0.8s linear;
 }
-/* line 37, ../sass/scrollThis.scss */
+/* line 41, ../sass/scrollThis.scss */
 .scrollbar:active {
   background: #777;
 }
 
-/* line 42, ../sass/scrollThis.scss */
+/* line 46, ../sass/scrollThis.scss */
 .scroll_time .scrollbar {
   opacity: 1;
 }
 
-/* line 47, ../sass/scrollThis.scss */
+/* line 51, ../sass/scrollThis.scss */
 .scroll_to_end .scrollbar, .scroll_to_end .scroll_content {
   -webkit-transition: all 0.5s linear;
   -moz-transition: all 0.5s linear;

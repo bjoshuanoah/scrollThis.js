@@ -5,6 +5,12 @@ div {
 }
 
 /* line 9, ../sass/stylesheet.scss */
+p {
+  margin: 0;
+  padding: 1em;
+}
+
+/* line 14, ../sass/stylesheet.scss */
 .container {
   margin-left: 15px;
   margin-top: 8px;
@@ -12,14 +18,14 @@ div {
   height: 344px;
   overflow: hidden;
 }
-/* line 15, ../sass/stylesheet.scss */
+/* line 20, ../sass/stylesheet.scss */
 .container .content {
   padding: 0;
   border: 0;
   margin: 0;
   display: block;
 }
-/* line 20, ../sass/stylesheet.scss */
+/* line 25, ../sass/stylesheet.scss */
 .container .content .instagram_photo {
   width: 108px;
   height: 108px;
@@ -36,7 +42,7 @@ div {
   -moz-box-shadow: 0 0 2px #666666;
   box-shadow: 0 0 2px #666666;
 }
-/* line 29, ../sass/stylesheet.scss */
+/* line 34, ../sass/stylesheet.scss */
 .container .content .instagram_photo img {
   width: 98px;
   height: 98px;
