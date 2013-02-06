@@ -12,7 +12,11 @@
     that.scrollbar = $('<div/>').addClass('scrollbar');
     that.track = $('<div/>').addClass('scrollbar_track');
     that.track.append(that.scrollbar);
+    //calculations
+    that.percent = (that.containerHeight/that.contentHeight) * 100;
+    that.scrollHeight = (that.containerHeight/that.contentHeight) * that.containerHeight;
     that.max = (that.contentHeight - that.containerHeight) * (-1);
+    that.maxScroll = (that.containerHeight - that.scrollHeight);
     //utilities
     that.transform = (function () {
       var body = document.body || document.documentElement,
@@ -37,12 +41,7 @@
     };
 
     that.begin = function (container) {
-      var start, 
-        end,  
-        delta_d,  
-        scroller_pct, 
-        scroller_height, 
-        max_scroller_scroll;
+      var delta_d;
 
       if (that.container.children().length < 2){
         that.container.append(that.track);
@@ -59,11 +58,8 @@
       that.container.hover(function () {
         that.container.addClass('scroll_time');
         delta_d = that.content.position().top;
-        scroller_pct = (that.containerHeight/that.contentHeight) * 100;
-        scroller_height = (that.containerHeight/that.contentHeight) * that.containerHeight;
-        max_scroller_scroll = (that.containerHeight - scroller_height);
         that.scrollbar.css({
-          "height": "" + scroller_pct + "%"
+          "height": "" + that.percent + "%"
         });
         that.container.on('mousewheel', function (e,d) {
           e.preventDefault();
@@ -78,7 +74,7 @@
             that.content.css(that.css(delta_d));
           }
           that.content.css(that.css(delta_d));
-          that.scrollbar.css(that.css((delta_d / that.max) * max_scroller_scroll));
+          that.scrollbar.css(that.css((delta_d / that.max) * that.maxScroll));
         });
         that.scrollbar.draggable({ 
           axis: "y",
@@ -102,30 +98,24 @@
       });
       var platform = window.clientInformation.platform;
       var plt = platform.toLowerCase();
-      if (plt == 'ipad' || plt == 'ipod' || plt == 'iphone' || plt.indexOf('arm') > -1 || plt == 'blackberry') {
-        container.css({'overflow':'auto'});
+      if (plt == 'ipad' 
+        || plt == 'ipod' 
+        || plt == 'iphone' 
+        || plt.indexOf('arm') > -1 
+        || plt == 'blackberry') {
+          that.container.css({'overflow':'auto'});
       }
-    }
+    };
 
     that.end = function () {
-      var scroller_pct, 
-        scroller_height, 
-        max_scroller_scroll;
-        setTimeout(function () {
-          scroller_pct = (that.containerHeight/that.contentHeight) * 100;
-          scroller_height = (that.containerHeight/that.contentHeight) * that.containerHeight;
-          max_scroller_scroll = (that.containerHeight - scroller_height);
-          that.scrollbar.css({
-            "height": "" + scroller_pct + "%"
-          });
-          that.content.animate({
-            top: that.max + 'px',
-          });
-          that.scrollbar.animate({
-            'top': max_scroller_scroll + "px",
-          });
-        }, 500);
-    } 
+      var duration = 500;
+        that.container.addClass('scroll_to_end');
+        that.content.css(that.css(that.max));
+        that.scrollbar.css(that.css(that.maxScroll));
+        setTimeout(function(){
+          that.container.removeClass('scroll_to_end');
+        }, duration);
+    };
     // init
     that.begin();
   };
@@ -148,7 +138,4 @@
       throw 'You need to call scrollThis first'
     }
   };
-
-
-
 }(jQuery));

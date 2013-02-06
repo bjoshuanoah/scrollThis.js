@@ -24,3 +24,12 @@
 .scroll_time .scrollbar{
 	opacity:1
 } 
+
+.scroll_to_end{
+	.scrollbar, .scroll_content{
+		-webkit-transition: all .5s linear; 
+		-moz-transition: all .5s linear; 
+		-o-transition: all .5s linear; 
+		transition: all .5s linear;
+	}
+}

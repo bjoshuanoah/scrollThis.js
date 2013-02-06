@@ -30,3 +30,11 @@
 .scroll_time .scrollbar {
   opacity: 1;
 }
+
+/* line 29, ../sass/scrollThis.scss */
+.scroll_to_end .scrollbar, .scroll_to_end .scroll_content {
+  -webkit-transition: all 0.5s linear;
+  -moz-transition: all 0.5s linear;
+  -o-transition: all 0.5s linear;
+  transition: all 0.5s linear;
+}
