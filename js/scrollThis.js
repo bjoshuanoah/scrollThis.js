@@ -12,7 +12,6 @@
     that.scrollbar = $('<div/>').addClass('scrollbar');
     that.scrollbarMock = $('<div/>').addClass('scrollbar_mock');
     that.track = $('<div/>').addClass('scrollbar_track');
-    that.track.append(that.scrollbar, that.scrollbarMock);
     //calculations
     that.percent = (that.containerHeight/that.contentHeight) * 100;
     that.scrollHeight = (that.containerHeight/that.contentHeight) * that.containerHeight;
@@ -35,6 +34,13 @@
       }
       return null;
     }());
+    that.touch = ((('ontouchstart' in window) 
+      || window.DocumentTouch 
+      && document instanceof DocumentTouch) 
+      ? true 
+      : false);
+    //build bar
+    that.track.append(that.scrollbar, (that.touch) ? null : that.scrollbarMock);
 
     that.css = function(top){
       var obj = {};
@@ -105,11 +111,7 @@
       }, function () {
         that.container.removeClass('scroll_time');
       });
-      if ((('ontouchstart' in window) 
-        || window.DocumentTouch 
-        && document instanceof DocumentTouch) 
-        ? true 
-        : false) {
+      if (that.touch) {
           that.container.css({'overflow':'auto'});
       }
     };
