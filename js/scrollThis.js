@@ -82,7 +82,7 @@
           containment: "parent", 
           drag: function (e, f) {
             var top = f.position.top;
-            that.content.css(that.css((top * that.max) / max_scroller_scroll)); 
+            that.content.css(that.css((top * that.max) / that.maxScroll)); 
           },
           stop: function () {
             setTimeout(function () {
@@ -96,13 +96,11 @@
       }, function () {
         that.container.removeClass('scroll_time');
       });
-      var platform = window.clientInformation.platform;
-      var plt = platform.toLowerCase();
-      if (plt == 'ipad' 
-        || plt == 'ipod' 
-        || plt == 'iphone' 
-        || plt.indexOf('arm') > -1 
-        || plt == 'blackberry') {
+      if ((('ontouchstart' in window) 
+        || window.DocumentTouch 
+        && document instanceof DocumentTouch) 
+        ? true 
+        : false) {
           that.container.css({'overflow':'auto'});
       }
     };
