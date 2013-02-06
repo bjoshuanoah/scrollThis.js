@@ -111,20 +111,15 @@
       var scroller_pct, 
         scroller_height, 
         max_scroller_scroll;
-
         setTimeout(function () {
-          scrollThis(container);
-          height = that.content.innerHeight();
-          container_height = that.container.innerHeight();
-          max_scroll = (height - container_height) * (-1);
-          scroller_pct = (container_height/height) * 100;
-          scroller_height = (container_height/height) * container_height;
-          max_scroller_scroll = (container_height - scroller_height);
+          scroller_pct = (that.containerHeight/that.contentHeight) * 100;
+          scroller_height = (that.containerHeight/that.contentHeight) * that.containerHeight;
+          max_scroller_scroll = (that.containerHeight - scroller_height);
           that.scrollbar.css({
             "height": "" + scroller_pct + "%"
           });
           that.content.animate({
-            top: max_scroll + 'px',
+            top: that.max + 'px',
           });
           that.scrollbar.animate({
             'top': max_scroller_scroll + "px",
@@ -133,13 +128,27 @@
     } 
     // init
     that.begin();
-  }
+  };
 
-  $.fn.scrollThis = function(){
+  $.fn.scrollThis = function(flag){
+    var arr = []
     $(this).each(function(){
-      scrollThis($(this));
+      arr.push(scrollThis($(this)));
     });
+    this.scrollers = arr;
     return this;
   };
+
+  $.fn.scrollToEnd = function(){
+    if(this.scrollers){
+      for(var i = 0; i < this.scrollers.length; i += 1){
+        this.scrollers[i].end();
+      }
+    }else{
+      throw 'You need to call scrollThis first'
+    }
+  };
+
+
 
 }(jQuery));
