@@ -2,9 +2,10 @@
 	top:0; 
 	right:4px; 
 	width:7px; 
-	position:absolute; 
+	position:absolute;
+	overflow: hidden; 
 	height:100%;
-	border-radius: 3px;
+	border-radius:4px;
 	-webkit-transition: background .3s linear; 
 	-moz-transition: background .3s linear; 
 	-o-transition: background .3s linear; 
@@ -24,7 +25,7 @@
 };
 
 .scrollbar{
-	border-radius:3px; 
+	border-radius:4px; 
 	background: #999;
 	-webkit-transition: opacity .8s linear; 
 	-moz-transition: opacity .8s linear; 

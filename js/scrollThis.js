@@ -1,9 +1,11 @@
 (function($){
-  var scrollThis  = function(container){
+  var loaded;
+  var scrollThis  = function(container, options){
     if(!(this instanceof scrollThis)){
       return new scrollThis(container);
     }
     var that = this;
+    //basic elements
     that.container = container;
     that.containerHeight = that.container.innerHeight();
     that.content = that.container.children(':first').addClass('scroll_content');
@@ -17,8 +19,6 @@
     that.scrollHeight = (that.containerHeight/that.contentHeight) * that.containerHeight;
     that.max = (that.contentHeight - that.containerHeight) * (-1);
     that.maxScroll = (that.containerHeight - that.scrollHeight);
-    that.scrollbar.css({height: that.percent + "%"});
-    that.scrollbarMock.css({height: that.percent + "%"});
     //utilities
     that.transform = (function () {
       var body = document.body || document.documentElement,
@@ -39,14 +39,31 @@
       && document instanceof DocumentTouch) 
       ? true 
       : false);
-    //build bar
+    //options
+    that.options = {
+      css : './css/scrollThis.css'
+    };
+    $.extend(that.options, options);
+    //build
     that.track.append(that.scrollbar, (that.touch) ? null : that.scrollbarMock);
-
+    //methods
     that.css = function(top){
-      var obj = {};
-      obj[(that.transform) ? that.transform : 'top'] = 
-        (that.transform) ? 'translate3d(0,' + top + 'px,0)' : top + 'px';
-      return obj;
+      if(top || top === 0){
+        var obj = {};
+        obj[(that.transform) ? that.transform : 'top'] = 
+          (that.transform) ? 'translate(0,' + top + 'px)' : top + 'px';
+        return obj;
+      }else{
+        var y;
+        if(that.transform){
+          y = that.content.get()[0].style[that.transform];
+          y = y.split(/\,/)[1];
+        }else{
+          y = that.content.get()[0].style.top;
+        }
+        y = parseFloat(y);
+        return y;
+      }
     };
 
     that.position = function(y){
@@ -59,22 +76,27 @@
 
     that.begin = function (container) {
       var delta_d;
-
+      that.scrollbar.css($.extend({}, {height: that.percent + "%"}, that.css(0)));
+      that.scrollbarMock.css({height: that.percent + "%"});
+      that.content.css(that.css(0));
       if (that.container.children().length < 2){
         that.container.append(that.track);
-        that.container
-          .before($('<link>')
-            .attr({
-              href : './css/scrollThis.css',
-              rel : 'stylesheet',
-              type : 'text/css'
-            })
-          );
+        if(!loaded){
+          that.container
+            .before($('<link>')
+              .attr({
+                href : './css/scrollThis.css',
+                rel : 'stylesheet',
+                type : 'text/css'
+              })
+            );
+          loaded = 1;
+        }
       }
 
       that.container.hover(function () {
         that.container.addClass('scroll_time');
-        delta_d = that.content.position().top;
+        delta_d = that.css();
         that.container.on('mousewheel', function (e,d) {
           e.preventDefault();
           if (d > 1){d = 1;}
@@ -98,6 +120,7 @@
           drag: function (e, f) {
             var top = f.position.top;
             that.position(top);
+            delta_d = that.css();
           },
           stop: function () {
             setTimeout(function () {
