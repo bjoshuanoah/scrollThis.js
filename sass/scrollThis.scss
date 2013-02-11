@@ -1,0 +1,57 @@
+.scroll_content{
+	padding-right : 7px!important;
+}
+
+.scrollbar_track{
+	top:0; 
+	right: 0px; 
+	width:7px; 
+	position:absolute;
+	overflow: hidden; 
+	height:100%;
+	border-radius:4px;
+	-webkit-transition: background .3s linear; 
+	-moz-transition: background .3s linear; 
+	-o-transition: background .3s linear; 
+	transition: background .3s linear;
+	&:active{
+		background : #ddd;
+		.scrollbar{
+			opacity: 1;
+		}
+	}
+}
+
+.scrollbar, .scrollbar_mock{
+	position: absolute;
+	top:0; 
+	width:7px; 
+	height:0px; 
+	cursor:pointer; 
+	opacity:0;
+};
+
+.scrollbar{
+	border-radius:4px; 
+	background: #999;
+	-webkit-transition: opacity .8s linear; 
+	-moz-transition: opacity .8s linear; 
+	-o-transition: opacity .8s linear; 
+	transition: opacity .8s linear;
+	&:active{
+		background:#777;
+	}
+}
+
+.scroll_time .scrollbar{
+	opacity:1
+} 
+
+.scroll_to_end{
+	.scrollbar, .scroll_content{
+		-webkit-transition: all .5s linear; 
+		-moz-transition: all .5s linear; 
+		-o-transition: all .5s linear; 
+		transition: all .5s linear;
+	}
+}

@@ -1,101 +1,193 @@
-var scrollThis = function (container) {
-	var start, end, move_this, height, container_height, delta_d, max_scroll, scroller_pct, scroller_height, max_scroller_scroll, scroller;
-	if (container.children().length < 2){
-		container.append('<div id="scrollbar_container"><div class="scroll_bar" style=""></div></div>');
-		container.after('<style>#scrollbar_container{top:0; right:4px; width:7px; position:absolute; height:100%;} .scroll_bar{top:0; width:7px; border-radius:3px; height:0px; background: #999;opacity:0;cursor:pointer; -webkit-transition: opacity .8s linear; -moz-transition: opacity .8s linear; -o-transition: opacity .8s linear; transition: opacity .8s linear;} .scroll_time .scroll_bar{opacity:1} .scroll_bar:active{background:#777;}</style>');
-	}
-	container.hover(function () {
-		container.addClass('scroll_time');
-		move_this = container.children(':first');
-		height = move_this.innerHeight();
-		container_height = container.innerHeight();
-		delta_d = move_this.position().top;
-		max_scroll = (height - container_height) * (-1);
-		scroller_pct = (container_height/height) * 100;
-		scroller_height = (container_height/height) * container_height;
-		max_scroller_scroll = (container_height - scroller_height);
-		//console.log(scroller_height, max_scroller_scroll)
-		scroller = $('.scroll_bar', container);
-		scroller.css({
-			"height": "" + scroller_pct + "%"
-		});
-		container.on('mousewheel', function (e,d) {
-			e.preventDefault();
-			if (d > 1){d = 1;}
-			delta_d = delta_d + d*10;
-			// console.log(delta_d);
-			if (delta_d < max_scroll) {
-				delta_d = max_scroll;
-				move_this.css({
-					"top": delta_d + 'px',
-				});
-			} else if (delta_d > 0) {
-				delta_d = 0
-				move_this.css({
-					"top": delta_d + 'px',
-				});
-			}
-			move_this.css({
-				'top': delta_d + "px",
-			}); 
-			scroller.css({
-				'top': (delta_d / max_scroll) * max_scroller_scroll + "px",
-			});
+(function($){
+  var loaded;
+  var scrollThis  = function(container, options){
+    if(!(this instanceof scrollThis)){
+      return new scrollThis(container);
+    }
+    var that = this;
+    //basic elements
+    that.container = container;
+    that.containerHeight = that.container.outerHeight();
+    that.content = that.container.children(':first').addClass('scroll_content');
+    that.contentHeight = that.content.outerHeight();
+    //scrollbar elements
+    that.scrollbar = $('<div/>').addClass('scrollbar');
+    that.scrollbarMock = $('<div/>').addClass('scrollbar_mock');
+    that.track = $('<div/>').addClass('scrollbar_track');
+    //calculations
+    that.percent = (that.containerHeight/that.contentHeight) * 100;
+    that.scrollHeight = (that.containerHeight/that.contentHeight) * that.containerHeight;
+    that.max = (that.contentHeight - that.containerHeight) * (-1);
+    that.maxScroll = (that.containerHeight - that.scrollHeight);
+    //utilities
+    that.transform = (function () {
+      var body = document.body || document.documentElement,
+        style = body.style, property = 'transform', vendor;
+      if(typeof style[property] == 'string') {return true; }
+      // Tests for vendor specific prop
+      vendor = ['Moz', 'Webkit', 'Khtml', 'O', 'ms'];
+      property = property.charAt(0).toUpperCase() + property.substr(1);
+      for(var i = 0; i < vendor.length; i += 1) {
+        if(typeof style[vendor[i] + property] == 'string'){ 
+          return vendor[i] + property; 
+        }
+      }
+      return null;
+    }());
+    that.touch = ((('ontouchstart' in window) 
+      || window.DocumentTouch 
+      && document instanceof DocumentTouch) 
+      ? true 
+      : false);
+    //options
+    that.options = {
+      css : './css/scrollThis.css'
+    };
+    $.extend(that.options, options);
+    //build
+    that.track.append(that.scrollbar, (that.touch) ? null : that.scrollbarMock);
+    //methods
+    that.css = function(top){
+      if(top || top === 0){
+        var obj = {};
+        obj[(that.transform) ? that.transform : 'top'] = 
+          (that.transform) ? 'translate(0,' + top + 'px)' : top + 'px';
+        return obj;
+      }else{
+        var y;
+        if(that.transform){
+          y = that.content.get()[0].style[that.transform];
+          y = y.split(/\,/)[1];
+        }else{
+          y = that.content.get()[0].style.top;
+        }
+        y = parseFloat(y);
+        return y;
+      }
+    };
 
-		});
-		scroller.draggable({ 
-			axis: "y",
-			scroll: true,
-			containment: "parent", 
-			drag: function (e, f) {
-				var top = f.position.top;
-				move_this.css({
-					'top': (top * max_scroll) / max_scroller_scroll + "px",
-				}); 
-			},
-			stop: function () {
-				setTimeout(function () {
-					if (!container.hasClass('scroll_time')){
-						container.addClass('scroll_time');
-					}
-				}, 1);
-			}
-		});
-		return false;
-	}, function () {
-		container.removeClass('scroll_time');
-	});
-	var platform = window.clientInformation.platform;
-	var plt = platform.toLowerCase();
-	if (plt == 'ipad' || plt == 'ipod' || plt == 'iphone' || plt.indexOf('arm') > -1 || plt == 'blackberry') {
-		container.css({'overflow':'auto'});
-	}
-}
+    that.position = function(y){
+      var content = (y * that.max) / that.maxScroll
+      that.content.css(that.css(content));
+      that.scrollbar.css(
+        $.extend({}, that.css(y), {top : 0})
+      );   
+    };
 
-var scrollThisToEnd = function (id) {
-	var move_this, height, container_height, max_scroll, scroller_pct, scroller_height, max_scroller_scroll, scroller;
+    that.init = function (container) {
+      var delta_d;
+      that.scrollbar.css($.extend({}, {height: that.percent + "%"}, that.css(0)));
+      that.scrollbarMock.css({height: that.percent + "%"});
+      that.content.css(that.css(0));
+      if (that.container.children().length < 2){
+        that.container.append(that.track);
+        if(!loaded){
+          that.container
+            .before($('<link>')
+              .attr({
+                href : './css/scrollThis.css',
+                rel : 'stylesheet',
+                type : 'text/css'
+              })
+            );
+          loaded = 1;
+        }
+      }
 
-	var this_id = "message_"+id;
-   	container = $("#" + this_id);
-   	//console.log(this_id);
-   	setTimeout(function () {
-   		scrollThis(container);
-		move_this = container.children(':first');
-		height = move_this.innerHeight();
-		container_height = container.innerHeight();
-		max_scroll = (height - container_height) * (-1);
-		scroller_pct = (container_height/height) * 100;
-		scroller_height = (container_height/height) * container_height;
-		max_scroller_scroll = (container_height - scroller_height);
-		scroller = $('.scroll_bar', container);
-		scroller.css({
-			"height": "" + scroller_pct + "%"
-		});
-		move_this.animate({
-			top: max_scroll + 'px',
-		});
-		scroller.animate({
-			'top': max_scroller_scroll + "px",
-		});
-    }, 500);
-}	
+      that.container.hover(function () {
+        that.container.addClass('scroll_time');
+        delta_d = that.css();
+        that.container.on('mousewheel', function (e,d) {
+          e.preventDefault();
+          if (d > 1){d = 1;}
+          delta_d = delta_d + d*10;
+          // console.log(delta_d);
+          if (delta_d < that.max) {
+            delta_d = that.max;
+            that.content.css(that.css(delta_d));
+          } else if (delta_d > 0) {
+            delta_d = 0
+            that.content.css(that.css(delta_d));
+          }
+          that.content.css(that.css(delta_d));
+          that.scrollbar.css(that.css((delta_d / that.max) * that.maxScroll));
+          that.scrollbarMock.css({'top' : ((delta_d / that.max) * that.maxScroll) + 'px'})
+        });
+        that.scrollbarMock.draggable({ 
+          axis: "y",
+          scroll: true,
+          containment: "parent", 
+          drag: function (e, f) {
+            var top = f.position.top;
+            that.position(top);
+            delta_d = that.css();
+          },
+          stop: function () {
+            setTimeout(function () {
+              if (!that.container.hasClass('scroll_time')){
+                that.container.addClass('scroll_time');
+              }
+            }, 1);
+          }
+        });
+        return false;
+      }, function () {
+        that.container.removeClass('scroll_time');
+      });
+      if (that.touch) {
+          that.container.css({'overflow':'auto'});
+      }
+    };
+    that.top = function () {
+      var duration = 500;
+        that.container.addClass('scroll_to_end');
+        that.content.css(that.css(0));
+        that.scrollbar.css(that.css(0));
+        that.scrollbarMock.css({"top" : '0px'});
+        setTimeout(function(){
+          that.container.removeClass('scroll_to_end');
+        }, duration);
+    };
+    that.bottom = function () {
+      var duration = 500;
+        that.container.addClass('scroll_to_end');
+        that.content.css(that.css(that.max));
+        that.scrollbar.css(that.css(that.maxScroll));
+        that.scrollbarMock.css({"top" : that.maxScroll + 'px'});
+        setTimeout(function(){
+          that.container.removeClass('scroll_to_end');
+        }, duration);
+    };
+    // init
+    that.init();
+  };
+
+  $.fn.scrollThis = function(flag){
+    var arr = []
+    $(this).each(function(){
+      arr.push(scrollThis($(this)));
+    });
+    this.scrollers = arr;
+    return this;
+  };
+
+  $.fn.scrollToEnd = function(){
+    if(this.scrollers){
+      for(var i = 0; i < this.scrollers.length; i += 1){
+        this.scrollers[i].bottom();
+      }
+    }else{
+      throw 'You need to call scrollThis first'
+    }
+  };
+
+  $.fn.scrollToTop = function(){
+    if(this.scrollers){
+      for(var i = 0; i < this.scrollers.length; i += 1){
+        this.scrollers[i].top();
+      }
+    }else{
+      throw 'You need to call scrollThis first'
+    }
+  };
+}(jQuery));
